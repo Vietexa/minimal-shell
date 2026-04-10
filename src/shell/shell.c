@@ -6,23 +6,16 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <string.h> 
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "../parser/parser.h" 
-
-static void free_args(argument_t *args){ // Free the contents of the arguments array
-if (args == NULL || args->args == NULL) return;
-
-for (int i = 0; args->args[i]; i++){
-        free(args->args[i]);
-        args->args[i] = NULL;
-    } 
-}   
+#include "../cleanup/cleanup.h"
+#include "../commands/commands.h"
 
 
 void run_shell(void){
         
+
     char *line = NULL;
 
     argument_t arguments;
@@ -30,6 +23,7 @@ void run_shell(void){
 
 
     arguments.args = calloc(arguments.capacity, sizeof(char*));
+
 
     while (1) {
         
@@ -49,12 +43,9 @@ void run_shell(void){
 
     if (*line) {
         add_history(line);
-    
     }
-        //getline(&line, &len, stdin);
-
         //free the previous arguments if any
-        free_args(&arguments);
+        free_content_args(&arguments);
            
         parse_cmd(line, &arguments);
 
@@ -62,8 +53,9 @@ void run_shell(void){
             continue;
 
         // Exit the shell
-        if (strcmp(arguments.args[0], "exit") == 0)
-            break;
+       if (check_if_cmd_used_and_call(&arguments,line)){
+        continue;
+       }
 
         pid_t pid = fork();
 
@@ -80,7 +72,7 @@ void run_shell(void){
     }
     free(line);
 
-    free_args(&arguments); // free contents
+    free_content_args(&arguments); // free contents
     
     if (arguments.args){
     free(arguments.args);
