@@ -9,9 +9,6 @@
 #include "../parser/parser.h" 
 
 
-
-
-
 void run_shell(void){
         
     char *line = NULL;
