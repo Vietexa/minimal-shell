@@ -1,11 +1,14 @@
 
 #include "shell.h"
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <string.h> 
+#include <readline/readline.h>
+#include <readline/history.h>
 #include "../parser/parser.h" 
 
 static void free_args(argument_t *args){ // Free the contents of the arguments array
@@ -21,7 +24,6 @@ for (int i = 0; args->args[i]; i++){
 void run_shell(void){
         
     char *line = NULL;
-    size_t len = 0;
 
     argument_t arguments;
     arguments.capacity = 10; // initial capacity
@@ -31,10 +33,25 @@ void run_shell(void){
 
     while (1) {
         
-        printf("VTShell> ");
         fflush(stdout);
 
-        getline(&line, &len, stdin);
+        if (line) {
+            free(line);
+            line = NULL;
+        }
+
+        line = readline("VTShell>");
+
+        if (!line) {
+        printf("\n");
+        break;
+}
+
+    if (*line) {
+        add_history(line);
+    
+    }
+        //getline(&line, &len, stdin);
 
         //free the previous arguments if any
         free_args(&arguments);
@@ -64,8 +81,11 @@ void run_shell(void){
     free(line);
 
     free_args(&arguments); // free contents
+    
+    if (arguments.args){
     free(arguments.args);
     arguments.args = NULL;
+    }
     
     
 }
