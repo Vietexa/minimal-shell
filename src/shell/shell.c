@@ -8,6 +8,15 @@
 #include <string.h> 
 #include "../parser/parser.h" 
 
+static void free_args(argument_t *args){ // Free the contents of the arguments array
+if (args == NULL || args->args == NULL) return;
+
+for (int i = 0; args->args[i]; i++){
+        free(args->args[i]);
+        args->args[i] = NULL;
+    } 
+}   
+
 
 void run_shell(void){
         
@@ -18,7 +27,7 @@ void run_shell(void){
     arguments.capacity = 10; // initial capacity
 
 
-    arguments.args = malloc(arguments.capacity * sizeof(char*));
+    arguments.args = calloc(arguments.capacity, sizeof(char*));
 
     while (1) {
         
@@ -26,8 +35,10 @@ void run_shell(void){
         fflush(stdout);
 
         getline(&line, &len, stdin);
-           
 
+        //free the previous arguments if any
+        free_args(&arguments);
+           
         parse_cmd(line, &arguments);
 
         if (arguments.args[0] == NULL)
@@ -51,5 +62,10 @@ void run_shell(void){
         }
     }
     free(line);
+
+    free_args(&arguments); // free contents
     free(arguments.args);
+    arguments.args = NULL;
+    
+    
 }
