@@ -4,7 +4,7 @@
 #include "../shell/shell.h"
 
 void parse_cmd(char* line, argument_t *arguments ){ // Parse the input
-
+// this is parsing hell, i'm not going to comment all this
     int i = 0;
     int in_quotes = 0;
     char quote_char = 0;

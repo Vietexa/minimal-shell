@@ -4,7 +4,7 @@
 typedef struct argument_s {
 size_t capacity;
 char **args;
-} argument_t;
+} argument_t; // our custom struct
 
 void run_shell(void);
 
